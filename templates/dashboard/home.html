@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="text-center container-fluid">
+        {% if user %}
+
+            <div class="rounded mt-3 border border-secondary bg-dark" style="min-height: 350px">
+                <div class="mt-3">
+                    {% if user.is_superuser %}
+                        <h1 class="text-danger">Admin</h1>
+                    {% else %}
+                   <h1 class="text-white"> {{ user.groups.get }}</h1>
+                    {% endif %}
+
+                    <img class="d-flex ms-5 rounded-circle float-start"
+                         src="{{ user.socialaccount_set.all.0.get_avatar_url }}"/>
+                    <div class="d-flex align-items-start flex-column float-start">
+                        <h2 class="ms-3 text-white">{{ user.first_name }}</h2>
+                        <label class="ms-3 text-muted">{{ user.email }}</label></div>
+                    {% for group in  request.user.groups.all %}
+                        {% if 'Sázkař' == group.name %}
+                            <label class="float-end me-5 text-white" for="">Kredity: 4200</label>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

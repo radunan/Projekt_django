@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Přidání hry{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row m-2">
+            <form method="post" class="" id="game-form">
+                {% csrf_token %}
+                <div class="">
+                    <label for="">Název hry</label> {{ form.title }}
+                    <div id="time-inputs">
+                        <label for="">Začátek hry</label>{{ form.time_start }}
+                        <label for="">Konec hry</label>{{ form.time_end }}
+                    </div>
+                    <label for="">Popisek</label>{{ form.description }}
+                    <label for="">Aktivní</label> {{ form.active }}
+
+                </div>
+                <input type="submit" value="Odeslat" class="btn btn-dark">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleTimeInputs() {
+            var activeCheckbox = document.getElementById("id_active");
+            var timeInputs = document.getElementById("time-inputs");
+
+            if (activeCheckbox.checked) {
+                timeInputs.style.display = "none";
+            } else {
+                timeInputs.style.display = "block";
+            }
+        }
+
+        // call toggleTimeInputs() on page load in case the checkbox is already checked
+        toggleTimeInputs();
+
+        // bind toggleTimeInputs() to the onchange event of the active checkbox
+        document.getElementById("id_active").onchange = toggleTimeInputs;
+    </script>
+{% endblock %}

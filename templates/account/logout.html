@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+
+{% block content %}
+<div class="text-center">
+<h1>{% trans "Odhlásit se" %}</h1>
+
+<p>{% trans 'Určitě se chcete odhlásit?' %}</p>
+
+<form method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+  <button class="btn btn-dark" type="submit">{% trans 'Odhlásit se' %}</button>
+</form>
+
+</div>
+{% endblock %}
