@@ -2,17 +2,19 @@ from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Game, GamePlayer, PlayerGame
+from .models import Game, PlayerGame
 from .forms import GameForm, GamePlayersForm
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.urls import reverse
 
 
 @login_required
 def index(request):
     games = Game.objects.all()
     gamePlayers = PlayerGame.objects.all()
-    context = {'games': games, 'gameplayers': gamePlayers}
+    is_admin_or_player = is_player_or_admin(request.user)
+    context = {'games': games, 'gameplayers': gamePlayers, 'is_admin_or_player': is_admin_or_player}
     return render(request, 'index.html', context)
 
 
@@ -20,11 +22,13 @@ def index(request):
 def detail(request, id):
     game = Game.objects.get(pk=id)
     players = PlayerGame.objects.filter(game=id)
+    is_admin_or_player = is_player_or_admin(request.user)
     if request.method == 'POST' and game.active:
         game.time_end = timezone.now()
         game.active = False
         game.save()
-    return render(request, 'gameDetail.html', {'game': game, 'players': players})
+    return render(request, 'gameDetail.html',
+                  {'game': game, 'players': players, 'is_admin_or_player': is_admin_or_player})
 
 
 @login_required
@@ -32,6 +36,13 @@ def delete(request, id):
     game = Game.objects.get(pk=id)
     game.delete()
     return HttpResponseRedirect('/')
+
+
+def deletePlayer(request, id):
+    gamePlayer = PlayerGame.objects.get(pk=id)
+    game_id = gamePlayer.game.id
+    gamePlayer.delete()
+    return HttpResponseRedirect(reverse('detail', args=[game_id]))
 
 
 def gameEdit(request, id):
@@ -52,13 +63,12 @@ def gameEdit(request, id):
             return render(request, 'gameEdit.html', context)
 
 
-
-
 def is_player_or_admin(user):
     if user.is_superuser:
         return user.is_superuser
     else:
         return user.groups.filter(name='Hráč').exists()
+
 
 
 @login_required
@@ -93,6 +103,12 @@ def addGamePlayers(request):
             score = form.cleaned_data['score']
             get_player = User.objects.get(username=player[0])
             get_game = Game.objects.get(title=game[0])
+
+            if PlayerGame.objects.filter(game=get_game, player=get_player).exists():
+                error_message = f"Hráč {get_player.username} už byl přidán do hry."
+                form.add_error('player', error_message)
+                return render(request, 'gamePlayersAdd.html', {'form': form})
+
             PlayerGame.objects.create(game=get_game, player=get_player, score=score)
 
             return HttpResponseRedirect('/')
@@ -100,3 +116,9 @@ def addGamePlayers(request):
         form = GamePlayersForm()
 
     return render(request, 'gamePlayersAdd.html', {'form': form})
+
+
+@login_required
+def userGames(request):
+    userGames = PlayerGame.objects.filter(player=request.user)
+    return render(request, 'user_games.html', {'userGames': userGames})

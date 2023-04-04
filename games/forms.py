@@ -22,4 +22,5 @@ class GamePlayersForm(forms.Form):
                                             queryset=User.objects.filter(groups__name='Hráč'),
                                             widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
 
-    score = forms.IntegerField(label="Skóre", min_value=0, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    score = forms.IntegerField(label="Skóre", min_value=0, widget=forms.NumberInput(attrs={'class': 'form-control'}),
+                               initial=0)

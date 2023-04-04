@@ -14,15 +14,6 @@ class Game(models.Model):
         return self.title
 
 
-class GamePlayer(models.Model):
-    game = models.ManyToManyField(Game, blank=True)
-    player = models.ManyToManyField(User, blank=True)
-    score = models.IntegerField('skóre', default=0)
-
-    def __str__(self):
-        return "Hráči ve Hrách + body"
-
-
 class PlayerGame(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(User, on_delete=models.CASCADE)

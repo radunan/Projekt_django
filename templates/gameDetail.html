@@ -26,8 +26,12 @@
                         </div>
 
                         {% for player in players %}
-                            <label class="pe-5 d-flex justify-content-start">{{ player.player }} - {{ player.score }}
-                                bodů</label>
+                            <label class="d-flex justify-content-start mb-2">{{ player.player }} - {{ player.score }}
+                                bodů{% if user.is_superuser or user == game.author %}
+                                    <button class="col-1 float-end ms-2 btn btn-sm" style="background-color: #CD0404"><a
+                                            class="text-decoration-none text-white " style="font-family: Helvetica"
+                                            href={% url 'deletePlayer' id=player.pk %}>Smazat</a></button>
+                                {% endif %}</label>
                         {% endfor %}
                     {% endif %}
                     {% if game.active == True %}

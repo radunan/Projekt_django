@@ -5,28 +5,19 @@
             <div class="container">
                 <div class="row border border-3 border-dark m-2 mb-3 p-2" style="background-color: #22A39F">
                     <h2 class="d-flex float-start border-bottom"
-                        style="font-family: Helvetica">{{ game.title }} </h2>
+                        style="font-family: Helvetica">{{ game.title }}  {% if game.active == True %}
+                        <label class="d-flex justify-content-end"><span
+                                class="me-1 ms-2 text-success">●</span></label>
+                    {% endif %}</h2>
                     <div class="float-end d-flex justify-content-end p-2">
                         <button class="col-1 float-end me-2 btn bg-dark"><a
                                 class="text-decoration-none text-white " style="font-family: Helvetica"
                                 href={% url 'detail' id=game.pk %}>Detail</a></button>
-                       {% if user.is_superuser %}
-                       <button class="col-1 float-end me-2 btn" style="background-color: #CD0404"><a
-                                class="text-decoration-none text-white " style="font-family: Helvetica"
-                                href={% url 'delete' id=game.pk %}>Smazat</a></button>
-                           <button class="col-1 float-end me-2 btn" style="background-color: #CD0404"><a
-                                class="text-decoration-none text-white " style="font-family: Helvetica"
-                                href={% url 'gameEdit' id=game.pk %}>Upravit</a></button>
-                       {% endif %}
-                        {% for group in request.user.groups.all %}
-                    {% if group.name == 'Hráč' %}
-                        <button class="col-1 float-end me-2 btn" style="background-color: #CD0404"><a
-                                class="text-decoration-none text-white " style="font-family: Helvetica"
-                                href={% url 'delete' id=game.pk %}>Smazat</a></button>
-                    {% endif %}
-                {% endfor %}
-
-
+                        {% if is_admin_or_player %}
+                            <button class="col-1 float-end me-2 btn" style="background-color: #CD0404"><a
+                                    class="text-decoration-none text-white " style="font-family: Helvetica"
+                                    href={% url 'delete' id=game.pk %}>Smazat</a></button>
+                        {% endif %}
 
 
                     </div>

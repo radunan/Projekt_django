@@ -20,6 +20,9 @@
                     {% for group in  request.user.groups.all %}
                         {% if 'Sázkař' == group.name %}
                             <label class="float-end me-5 text-white" for="">Kredity: 4200</label>
+
+                        {% else %}
+                            <a href="{% url 'userGames' %}" class="float-end me-5 text-white text-decoration-none">Moje Historie</a>
                         {% endif %}
                     {% endfor %}
                 </div>
