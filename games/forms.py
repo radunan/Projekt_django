@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Game
+"""from django.contrib.auth import get_user_model
+
+User = get_user_model()"""
 
 
 class GameForm(forms.Form):
@@ -16,7 +19,7 @@ class GameForm(forms.Form):
 
 class GamePlayersForm(forms.Form):
     game = forms.ModelMultipleChoiceField(label="Hra",
-                                          queryset=Game.objects.all(),
+                                          queryset=Game.objects.all().order_by('-time_start'),
                                           widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     player = forms.ModelMultipleChoiceField(label="Hráč",
                                             queryset=User.objects.filter(groups__name='Hráč'),

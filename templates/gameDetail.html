@@ -7,47 +7,55 @@
                     style="font-family: Helvetica; border-bottom: 3px solid black; border-bottom-color: #22A39F">{{ game.title }}</h1>
                 <div/>
                 <span class="d-flex justify-content-start float-start">{{ game.description }}</span>
-                <div class="">
-                    {% if game.author.is_superuser %}
-                        <span class="text-danger d-flex justify-content-end">Autor: {{ game.author }}</span>
-                    {% else %}
-                        <span class="d-flex justify-content-end">Autor hry: {{ game.author }}</span>
-                    {% endif %}
-                    {% if game.active == True %}
-                        <label class="d-flex justify-content-end"><span
-                                class="me-1 text-success">●</span>Aktivní</label>
-                    {% else %}
-                        <label class="d-flex justify-content-end">Neaktivní</label>
-                    {% endif %}
+                {% if game.author.is_superuser %}
+                    <span class="text-danger d-flex justify-content-end">Autor: {{ game.author }}</span>
+                {% else %}
+                    <span class="d-flex justify-content-end">Autor hry: {{ game.author }} {% if game.winner %}-
+                        {{ game.winner }}{% endif %}</span>
+                {% endif %}
+                {% if game.active == True %}
+                    <label class="d-flex justify-content-end"><span
+                            class="me-1 text-success">●</span>Aktivní</label>
+                {% else %}
+                    <label class="d-flex justify-content-end">Neaktivní</label>
+                {% endif %}
 
 
-                    {% if players %}
-                        <div class="mt-5 border-bottom border-dark mb-2"><h2 style="font-size: 22px">Hráči ve hře</h2>
-                        </div>
+                {% if players %}
+                    <div class="mt-5 border-bottom border-dark mb-2">
+                        <h2 style="font-size: 22px">Hráči ve hře</h2>
+                    </div>
+{% for player in players %}
+    <label class="d-flex justify-content-start mb-2">
+        {{ player.player.username }} - {{ player.score }} bodů
+        {% if game.winner and winner == player.player.username %}
+            <i class="bi bi-trophy-fill ms-2 "></i>
+        {% endif %}
+        {% if user.is_superuser or user == game.author %}
+            <button class="col-1 float-end ms-2 btn btn-sm" style="background-color: #CD0404">
+                <a class="text-decoration-none text-white " style="font-family: Helvetica"
+                   href={% url 'deletePlayer' id=player.pk %}>Smazat</a>
+            </button>
+        {% endif %}
+    </label>
+{% endfor %}
 
-                        {% for player in players %}
-                            <label class="d-flex justify-content-start mb-2">{{ player.player }} - {{ player.score }}
-                                bodů{% if user.is_superuser or user == game.author %}
-                                    <button class="col-1 float-end ms-2 btn btn-sm" style="background-color: #CD0404"><a
-                                            class="text-decoration-none text-white " style="font-family: Helvetica"
-                                            href={% url 'deletePlayer' id=player.pk %}>Smazat</a></button>
-                                {% endif %}</label>
-                        {% endfor %}
-                    {% endif %}
-                    {% if game.active == True %}
-                        <form method="POST">
-                            {% csrf_token %}
-                            <input type="submit" value="Ukončit hru" class="btn btn-danger">
-                        </form>
-                        <span class="d-flex float-start justify-content-start mt-5">Zahájení: {{ game.time_start|date:'d.m.Y H:i' }}</span>
-                    {% else %}
-                        <span class="d-flex float-start justify-content-start mt-5">Zahájení: {{ game.time_start|date:'d.m.Y H:i' }}</span>
-                        <span class="d-flex float-end justify-content-end mt-5 pb-2">Ukončení: {{ game.time_end|date:'d.m.Y H:i' }}</span>
-                    {% endif %}
-                </div>
+                {% endif %}
 
-
+                {% if game.active == True %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="submit" value="Ukončit hru" class="btn btn-danger">
+                    </form>
+                    <span class="d-flex float-start justify-content-start mt-5">Zahájení: {{ game.time_start|date:'d.m.Y H:i' }}</span>
+                {% else %}
+                    <span class="d-flex float-start justify-content-start mt-5">Zahájení: {{ game.time_start|date:'d.m.Y H:i' }}</span>
+                    <span class="d-flex float-end justify-content-end mt-5 pb-2">Ukončení: {{ game.time_end|date:'d.m.Y H:i' }}</span>
+                {% endif %}
             </div>
+
+
+        </div>
         </div>
 
 

@@ -8,10 +8,14 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.urls import reverse
 
+"""
+from django.contrib.auth import get_user_model
+User = get_user_model()"""
+
 
 @login_required
 def index(request):
-    games = Game.objects.all()
+    games = Game.objects.all().order_by('-time_start')
     gamePlayers = PlayerGame.objects.all()
     is_admin_or_player = is_player_or_admin(request.user)
     context = {'games': games, 'gameplayers': gamePlayers, 'is_admin_or_player': is_admin_or_player}
@@ -23,12 +27,19 @@ def detail(request, id):
     game = Game.objects.get(pk=id)
     players = PlayerGame.objects.filter(game=id)
     is_admin_or_player = is_player_or_admin(request.user)
+
     if request.method == 'POST' and game.active:
         game.time_end = timezone.now()
         game.active = False
+
+        # Set the winner of the game
+        winner = game.get_winner()
+        game.winner = winner.username
         game.save()
+
     return render(request, 'gameDetail.html',
-                  {'game': game, 'players': players, 'is_admin_or_player': is_admin_or_player})
+                  {'game': game, 'players': players, 'is_admin_or_player': is_admin_or_player,
+                   'winner': str(game.winner)})
 
 
 @login_required
@@ -70,7 +81,6 @@ def is_player_or_admin(user):
         return user.groups.filter(name='Hráč').exists()
 
 
-
 @login_required
 @user_passes_test(is_player_or_admin, login_url='/')
 def add(request):
@@ -83,9 +93,9 @@ def add(request):
             description = form.cleaned_data['description']
             author = request.user
             active = form.cleaned_data['active']
-            Game.objects.create(title=title, time_start=time_start, time_end=time_end, description=description,
-                                author=author, active=active)
-            return HttpResponseRedirect('/')
+            game = Game.objects.create(title=title, time_start=time_start, time_end=time_end, description=description,
+                                       author=author, active=active)
+            return HttpResponseRedirect(reverse('detail', args=[game.id]))
     else:
         form = GameForm()
 
@@ -111,7 +121,12 @@ def addGamePlayers(request):
 
             PlayerGame.objects.create(game=get_game, player=get_player, score=score)
 
-            return HttpResponseRedirect('/')
+            if not get_game.active:
+                winner = get_game.get_winner()
+                get_game.winner = winner.playergame_set.first().player.username
+                get_game.save()
+
+            return HttpResponseRedirect(reverse('detail', args=[get_game.pk]))
     else:
         form = GamePlayersForm()
 
@@ -119,6 +134,7 @@ def addGamePlayers(request):
 
 
 @login_required
+@user_passes_test(is_player_or_admin, login_url='/')
 def userGames(request):
     userGames = PlayerGame.objects.filter(player=request.user)
     return render(request, 'user_games.html', {'userGames': userGames})

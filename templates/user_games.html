@@ -7,23 +7,25 @@
 
         {% for userGame in userGames %}
             <table class="table table-dark table-striped col-12 ">
+            {% spaceless %}
                 <tr>
-                    <th scope="col">Hra</th>
-                    <th scope="col">Začátek</th>
-                    <th scope="col">Konec</th>
-                    <th scope="col">Skóre</th>
+                    <th scope="col" class="text-center">Hra</th>
+                    <th scope="col" class="text-center">Začátek</th>
+                    <th scope="col" class="text-center">Konec</th>
+                    <th scope="col" class="text-center">Skóre</th>
                 </tr>
                 <tr>
-                    <td><a class="text-white text-decoration-none" href={% url 'detail' userGame.game_id %}>{{ userGame.game }}</a></td>
-                    <td>{{ userGame.game.time_start|date:'H:i' }}</td>
-                    <td>{{ userGame.game.time_end|date:'H:i' }}</td>
-                    <td>{{ userGame.score }}</td>
+                    <td class="col-3 text-center"><a class="text-white text-decoration-none" href={% url 'detail' userGame.game_id %}>{{ userGame.game.title}}</a></td>
+                    <td class="col-3 text-center">{{ userGame.game.time_start|date:'H:i'}}</td>
+                    <td class="col-3 text-center">{{ userGame.game.time_end|date:'H:i' }}</td>
+                    <td class="col-3 text-center">{{ userGame.score }}</td>
+
 
 
             </table>
-
+            {% endspaceless %}
         {% empty %}
-            <li>No games found.</li>
+            <li>Uživatel nemá žádné odehrané hry</li>
         {% endfor %}
     </div>
 {% endblock %}

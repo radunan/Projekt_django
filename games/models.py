@@ -1,5 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Max
+
+"""from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    credits = models.IntegerField(default=100)"""
 
 
 class Game(models.Model):
@@ -9,9 +16,16 @@ class Game(models.Model):
     description = models.TextField('Popisek', max_length=250)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     active = models.BooleanField('Aktivní', default=False)
+    winner = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.title
+
+    def get_winner(self):
+        winner = self.playergame_set.aggregate(Max('score'))
+        max_score = winner['score__max']
+        winner_player = self.playergame_set.filter(score=max_score).first().player
+        return winner_player
 
 
 class PlayerGame(models.Model):
@@ -20,4 +34,5 @@ class PlayerGame(models.Model):
     score = models.IntegerField('skóre', default=0)
 
     def __str__(self):
-        return "Hráči ve Hrách + body"
+        return f'{self.game.title}: {self.player.username}'
+
