@@ -13,7 +13,7 @@
                         <button class="col-1 float-end me-2 btn bg-dark"><a
                                 class="text-decoration-none text-white " style="font-family: Helvetica"
                                 href={% url 'detail' id=game.pk %}>Detail</a></button>
-                        {% if is_admin_or_player %}
+                        {% if user.is_superuser or user == game.author %}
                             <button class="col-1 float-end me-2 btn" style="background-color: #CD0404"><a
                                     class="text-decoration-none text-white " style="font-family: Helvetica"
                                     href={% url 'delete' id=game.pk %}>Smazat</a></button>

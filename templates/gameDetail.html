@@ -10,8 +10,7 @@
                 {% if game.author.is_superuser %}
                     <span class="text-danger d-flex justify-content-end">Autor: {{ game.author }}</span>
                 {% else %}
-                    <span class="d-flex justify-content-end">Autor hry: {{ game.author }} {% if game.winner %}-
-                        {{ game.winner }}{% endif %}</span>
+                    <span class="d-flex justify-content-end">Autor hry: {{ game.author }}</span>
                 {% endif %}
                 {% if game.active == True %}
                     <label class="d-flex justify-content-end"><span
@@ -26,10 +25,11 @@
                         <h2 style="font-size: 22px">Hráči ve hře</h2>
                     </div>
 {% for player in players %}
+    <div class="pb-2">
     <label class="d-flex justify-content-start mb-2">
         {{ player.player.username }} - {{ player.score }} bodů
         {% if game.winner and winner == player.player.username %}
-            <i class="bi bi-trophy-fill ms-2 "></i>
+            <i class="bi bi-trophy-fill ms-2" style="color:yellow"></i>
         {% endif %}
         {% if user.is_superuser or user == game.author %}
             <button class="col-1 float-end ms-2 btn btn-sm" style="background-color: #CD0404">
@@ -37,7 +37,9 @@
                    href={% url 'deletePlayer' id=player.pk %}>Smazat</a>
             </button>
         {% endif %}
+
     </label>
+    </div>
 {% endfor %}
 
                 {% endif %}
