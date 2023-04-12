@@ -2,28 +2,36 @@
 
 {% block content %}
     <div class="container-fluid">
-        <h1>Games</h1>
+        <h1 class="pb-3">Historie Her</h1>
 
 
         {% for userGame in userGames %}
             <table class="table table-dark table-striped col-12 ">
-            {% spaceless %}
                 <tr>
                     <th scope="col" class="text-center">Hra</th>
                     <th scope="col" class="text-center">Začátek</th>
                     <th scope="col" class="text-center">Konec</th>
                     <th scope="col" class="text-center">Skóre</th>
+                    <th scope="col" class="text-center">Stav</th>
+
                 </tr>
                 <tr>
-                    <td class="col-3 text-center"><a class="text-white text-decoration-none" href={% url 'detail' userGame.game_id %}>{{ userGame.game.title}}</a></td>
-                    <td class="col-3 text-center">{{ userGame.game.time_start|date:'H:i'}}</td>
-                    <td class="col-3 text-center">{{ userGame.game.time_end|date:'H:i' }}</td>
-                    <td class="col-3 text-center">{{ userGame.score }}</td>
+                    <td class="col-2 text-center"><a class="text-white text-decoration-none" href={% url 'detail' userGame.game_id %}>{{ userGame.game.title}}</a></td>
+                    <td class="col-2 text-center">{{ userGame.game.time_start|date:'H:i'}}</td>
+                    <td class="col-2 text-center">{{ userGame.game.time_end|date:'H:i' }}</td>
+                    <td class="col-2 text-center">{{ userGame.score }}</td>
+                    <td class="col-2 text-center">
+                        {% if user == userGame.game.get_winner %}
+                            Výhra
+                        {% else %}
+                           Prohra
+                        {% endif %}
+                    </td>
+
 
 
 
             </table>
-            {% endspaceless %}
         {% empty %}
             <li>Uživatel nemá žádné odehrané hry</li>
         {% endfor %}

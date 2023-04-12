@@ -32,9 +32,9 @@ def detail(request, id):
         game.time_end = timezone.now()
         game.active = False
 
-        # Set the winner of the game
         winner = game.get_winner()
-        game.winner = winner.username
+        winner_name = winner.username if winner else None
+        game.winner = winner_name
         game.save()
 
     return render(request, 'gameDetail.html',
@@ -52,8 +52,26 @@ def delete(request, id):
 def deletePlayer(request, id):
     gamePlayer = PlayerGame.objects.get(pk=id)
     game_id = gamePlayer.game.id
+    is_current_winner = False
+
+    # Check if the deleted player is the current winner
+    game = Game.objects.get(id=game_id)
+    if game.winner == gamePlayer.player.username:
+        is_current_winner = True
+
     gamePlayer.delete()
+
+    # If the deleted player was the current winner, update the winner to the player with the highest score
+    if is_current_winner:
+        winner = game.get_winner()
+        if winner:
+            game.winner = winner.playergame_set.first().player.username
+        else:
+            game.winner = None
+        game.save()
+
     return HttpResponseRedirect(reverse('detail', args=[game_id]))
+
 
 
 def gameEdit(request, id):
@@ -84,6 +102,12 @@ def is_player_or_admin(user):
 @login_required
 @user_passes_test(is_player_or_admin, login_url='/')
 def add(request):
+    active_games = Game.objects.filter(active=True).count()
+
+    if active_games >= 2 and request.POST.get('active'):
+        error_message = "Nelze mít více než 2 aktivní hry. Vydrž než hry skončí :)"
+        return render(request, 'gameAdd.html', {'form': GameForm(), 'error_message': error_message})
+
     if request.method == 'POST':
         form = GameForm(request.POST)
         if form.is_valid():

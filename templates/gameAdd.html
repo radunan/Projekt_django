@@ -14,7 +14,9 @@
                     </div>
                     <label for="">Popisek</label>{{ form.description }}
                     <label for="">Aktivní</label> {{ form.active }}
-
+                        {% if error_message %}
+                            <p class="text-danger">{{ error_message }}</p>
+                        {% endif %}
                 </div>
                 <input type="submit" value="Odeslat" class="btn btn-dark">
             </form>
@@ -33,10 +35,9 @@
             }
         }
 
-        // call toggleTimeInputs() on page load in case the checkbox is already checked
+
         toggleTimeInputs();
 
-        // bind toggleTimeInputs() to the onchange event of the active checkbox
         document.getElementById("id_active").onchange = toggleTimeInputs;
     </script>
 {% endblock %}

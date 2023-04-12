@@ -24,6 +24,8 @@ class Game(models.Model):
     def get_winner(self):
         winner = self.playergame_set.aggregate(Max('score'))
         max_score = winner['score__max']
+        if max_score is None:
+            return None
         winner_player = self.playergame_set.filter(score=max_score).first().player
         return winner_player
 
@@ -35,4 +37,3 @@ class PlayerGame(models.Model):
 
     def __str__(self):
         return f'{self.game.title}: {self.player.username}'
-
